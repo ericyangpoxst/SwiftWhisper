@@ -16,14 +16,14 @@ let package = Package(
         .tvOS(.v13),
     ],
     products: [
-        .library(name: "SwiftWhisper", targets: ["SwiftWhisper"]),
+//        .library(name: "SwiftWhisper", targets: ["SwiftWhisper"]),
         .library(name: "SwiftWhisperStream", targets: ["SwiftWhisperStream"]),
     ],
     dependencies: [
         .package(url: "https://github.com/ctreffs/SwiftSDL2.git", from: "1.4.1"),
     ],
     targets: [
-        .target(name: "SwiftWhisper", dependencies: [.target(name: "whisper_cpp")]),
+//        .target(name: "SwiftWhisper", dependencies: [.target(name: "whisper_cpp")]),
         .target(name: "SwiftWhisperStream", dependencies: [.target(name: "whisper_cpp"), .target(name: "LibWhisper")]),
         .target(name: "LibWhisper", dependencies: [
             .target(name: "whisper_cpp"),
@@ -62,7 +62,7 @@ let package = Package(
                 .linkedFramework("MetalKit"),
                 .linkedFramework("MetalPerformanceShaders"),
             ]),
-        .testTarget(name: "WhisperTests", dependencies: [.target(name: "SwiftWhisper")], resources: [.copy("TestResources/")])
+//        .testTarget(name: "WhisperTests", dependencies: [.target(name: "SwiftWhisper")], resources: [.copy("TestResources/")])
     ],
     cxxLanguageStandard: CXXLanguageStandard.cxx20
 )
