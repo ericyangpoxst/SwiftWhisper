@@ -94,6 +94,15 @@ public class WhisperStream: Thread {
         }
         segments.removeFirst(k)
         
+        print("segments number: \(segments.count)")
+        
+        print("LOOP START")
+        for segment in segments {
+            print("segment text:: \(segment.text)")
+            print("segment t0: \(segment.t0)")
+            print("segment t1: \(segment.t1)")
+        }
+        print("LOOP END")
         return 0
     }
 }
