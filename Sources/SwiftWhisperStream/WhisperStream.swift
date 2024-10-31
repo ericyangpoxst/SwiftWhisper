@@ -94,15 +94,18 @@ public class WhisperStream: Thread {
         }
         segments.removeFirst(k)
         
-        print("segments number: \(segments.count)")
+        // Use t0+t1 as the identifier key of text for unique
+        // Remove the segement that t0 = -1 || t1 == -1 || text == ""
         
-        print("LOOP START")
-        for segment in segments {
-            print("segment text:: \(segment.text)")
-            print("segment t0: \(segment.t0)")
-            print("segment t1: \(segment.t1)")
-        }
-        print("LOOP END")
+//        print("segments number: \(segments.count)")
+//        
+//        print("LOOP START")
+//        for segment in segments {
+//            print("segment text:: \(segment.text)")
+//            print("segment t0: \(segment.t0)")
+//            print("segment t1: \(segment.t1)")
+//        }
+//        print("LOOP END")
         return 0
     }
 }
