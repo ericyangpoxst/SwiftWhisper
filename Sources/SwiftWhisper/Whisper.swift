@@ -1,5 +1,6 @@
 import Foundation
 import whisper_cpp
+import Accelerate
 
 public class Whisper {
     private let whisperContext: OpaquePointer
@@ -13,6 +14,9 @@ public class Whisper {
 
     internal var frameCount: Int? // For progress calculation (value not in `whisper_state` yet)
     internal var cancelCallback: (() -> Void)?
+
+    
+    public var audioEnergy: [(rel: Float, avg: Float, max: Float, min: Float)] = []
 
     public init?(
         fromFileURL fileURL: URL,
@@ -132,6 +136,62 @@ public class Whisper {
         unmanagedSelf.release()
         self.unmanagedSelf = nil
     }
+    
+    public func processBuffer(_ buffer: [Float]) {
+//        audioSamples.append(contentsOf: buffer)
+
+        // Find the lowest average energy of the last 20 buffers ~2 seconds
+        let minAvgEnergy = self.audioEnergy.suffix(20).reduce(Float.infinity) { min($0, $1.avg) }
+        let relativeEnergy = Self.calculateRelativeEnergy(of: buffer, relativeTo: minAvgEnergy)
+
+        // Update energy for buffers with valid data
+        let signalEnergy = Self.calculateEnergy(of: buffer)
+        let newEnergy = (relativeEnergy, signalEnergy.avg, signalEnergy.max, signalEnergy.min)
+        self.audioEnergy.append(newEnergy)
+    }
+    
+    public static func calculateRelativeEnergy(of signal: [Float], relativeTo reference: Float?) -> Float {
+        let signalEnergy = calculateAverageEnergy(of: signal)
+
+        // Make sure reference is greater than 0
+        // Default 1e-3 measured empirically in a silent room
+        let referenceEnergy = max(1e-8, reference ?? 1e-3)
+
+        // Convert to dB
+        let dbEnergy = 20 * log10(signalEnergy)
+        let refEnergy = 20 * log10(referenceEnergy)
+
+        // Normalize based on reference
+        // NOTE: since signalEnergy elements are floats from 0 to 1, max (full volume) is always 0dB
+        let normalizedEnergy = rescale(value: dbEnergy, min: refEnergy, max: 0)
+
+        // Clamp from 0 to 1
+        return max(0, min(normalizedEnergy, 1))
+    }
+    
+    public static func calculateAverageEnergy(of signal: [Float]) -> Float {
+        var rmsEnergy: Float = 0.0
+        vDSP_rmsqv(signal, 1, &rmsEnergy, vDSP_Length(signal.count))
+        return rmsEnergy
+    }
+    
+    public static func calculateEnergy(of signal: [Float]) -> (avg: Float, max: Float, min: Float) {
+        var rmsEnergy: Float = 0.0
+        var minEnergy: Float = 0.0
+        var maxEnergy: Float = 0.0
+
+        // Calculate the root mean square of the signal
+        vDSP_rmsqv(signal, 1, &rmsEnergy, vDSP_Length(signal.count))
+
+        // Calculate the maximum sample value of the signal
+        vDSP_maxmgv(signal, 1, &maxEnergy, vDSP_Length(signal.count))
+
+        // Calculate the minimum sample value of the signal
+        vDSP_minmgv(signal, 1, &minEnergy, vDSP_Length(signal.count))
+
+        return (rmsEnergy, maxEnergy, minEnergy)
+    }
+
 
     public func transcribe(audioFrames: [Float], completionHandler: @escaping (Result<[Segment], Error>) -> Void) {
         prepareCallbacks()
@@ -152,6 +212,10 @@ public class Whisper {
 
         inProgress = true
         frameCount = audioFrames.count
+        
+        processBuffer(audioFrames)
+        
+        printf("audioEnergy: \(self.audioEnergy)")
 
         DispatchQueue.global(qos: .userInitiated).async {
             whisper_full(self.whisperContext, self.params.whisperParams, audioFrames, Int32(audioFrames.count))
