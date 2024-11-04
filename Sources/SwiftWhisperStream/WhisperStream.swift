@@ -2,9 +2,9 @@ import AVFoundation
 import LibWhisper
 
 public struct Segment {
-    let text: String
-    let t0: Int64
-    let t1: Int64
+    public let text: String
+    public let t0: Int64
+    public let t1: Int64
 }
 
 //public typealias OrderedSegments = [Segment]
