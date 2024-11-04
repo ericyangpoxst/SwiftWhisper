@@ -7,18 +7,18 @@ public struct Segment {
     let t1: Int64
 }
 
-public typealias OrderedSegments = [Segment]
-
-public extension OrderedSegments {
-    var text: any StringProtocol {
-        map { $0.text }.joined()
-    }
-}
+//public typealias OrderedSegments = [Segment]
+//
+//public extension OrderedSegments {
+//    var text: any StringProtocol {
+//        map { $0.text }.joined()
+//    }
+//}
 
 public class WhisperStream: Thread {
     let waiter = DispatchGroup()
     
-    @Published public private(set) var segments = OrderedSegments()
+    @Published public private(set) var segments = [Segment]()
     @Published public private(set) var alive = true
     
     let model: URL
