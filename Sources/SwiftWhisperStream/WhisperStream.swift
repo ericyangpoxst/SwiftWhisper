@@ -7,6 +7,12 @@ public struct Segment: Identifiable {
     public let text: String
     public let t0: Int64
     public let t1: Int64
+    
+    public init(text: String, t0: Int64, t1: Int64) {
+        self.text = text
+        self.t0 = t0
+        self.t1 = t1
+    }
 }
 
 //public typealias OrderedSegments = [Segment]
