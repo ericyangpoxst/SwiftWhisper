@@ -1,7 +1,9 @@
 import AVFoundation
 import LibWhisper
 
-public struct Segment {
+public struct Segment: Identifiable {
+    public let id: String = UUID().uuidString
+    
     public let text: String
     public let t0: Int64
     public let t1: Int64
