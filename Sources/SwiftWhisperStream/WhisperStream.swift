@@ -1,7 +1,7 @@
 import AVFoundation
 import LibWhisper
 
-public struct Segment: Identifiable {
+public struct Segment: Identifiable, Equatable {
     public let id: String = UUID().uuidString
     
     public let text: String
@@ -12,6 +12,10 @@ public struct Segment: Identifiable {
         self.text = text
         self.t0 = t0
         self.t1 = t1
+    }
+
+    public static func == (lhs: Segment, rhs: Segment) -> Bool {
+        return lhs.id == rhs.id
     }
 }
 
