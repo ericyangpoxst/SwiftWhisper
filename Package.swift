@@ -31,7 +31,7 @@ let package = Package(
                 .target(name: "LibWhisper"),
             ],
             swiftSettings: [.unsafeFlags([
-                "arch=arm64",
+                "--arch arm64",
             ])]
         ),
         .target(name: "LibWhisper", dependencies: [
