@@ -24,7 +24,16 @@ let package = Package(
     ],
     targets: [
 //        .target(name: "SwiftWhisper", dependencies: [.target(name: "whisper_cpp")]),
-        .target(name: "SwiftWhisperStream", dependencies: [.target(name: "whisper_cpp"), .target(name: "LibWhisper")]),
+        .target(
+            name: "SwiftWhisperStream",
+            dependencies: [
+                .target(name: "whisper_cpp"),
+                .target(name: "LibWhisper"),
+            ],
+            swiftSettings: [.unsafeFlags([
+                "--arch arm64",
+            ], .when(configuration: .release))]
+        ),
         .target(name: "LibWhisper", dependencies: [
             .target(name: "whisper_cpp"),
         ]),
