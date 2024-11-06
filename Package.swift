@@ -29,10 +29,10 @@ let package = Package(
             dependencies: [
                 .target(name: "whisper_cpp"),
                 .target(name: "LibWhisper"),
-            ],
-            swiftSettings: [.unsafeFlags([
-                "arch arm64",
-            ])]
+            ]
+//            swiftSettings: [.unsafeFlags([
+//                "arch arm64",
+//            ])]
         ),
         .target(name: "LibWhisper", dependencies: [
             .target(name: "whisper_cpp"),
