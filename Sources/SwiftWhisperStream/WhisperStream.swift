@@ -91,10 +91,9 @@ public class WhisperStream: Thread {
     }
     
     func callback(text: String?, t0: Int64, t1: Int64) -> Int32 {
-        if segments.isEmpty || text == nil || text?.starts(with: "(") || text?.starts(with: "[") {
-            return 0
+        if segments.isEmpty || text == nil {
+            segments.append(Segment(text: "", t0: -1, t1: -1))
         }
-        
         if let text = text {
             segments[segments.count - 1] = Segment(text: text, t0: t0, t1: t1)
         }
